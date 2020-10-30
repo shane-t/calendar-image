@@ -12,7 +12,7 @@ const accounts = [
 ]
 
 const CANVAS_WIDTH=800;
-const CANVAS_HEIGHT=600;
+const CANVAS_HEIGHT=480;
 const FONT='Helvetica'
 const DATE_VERTICAL_PADDING=5;
 const DATE_HORIZONTAL_PADDING=5;
@@ -31,7 +31,6 @@ const EVENT_BOX_HEIGHT=EVENT_HEIGHT - (EVENT_VERTICAL_MARGIN * 2) // Total heigh
 const EVENT_BOX_WIDTH=CANVAS_WIDTH - (EVENT_HORIZONTAL_MARGIN * 2) // Total width including border
 const EVENT_TIME_FONT_SIZE=32;
 const EVENT_TIME_RIGHT_OFFSET=195;
-const INVISIBLE_PORTION = 60; // Part of display that we cant see
 
 console.log(`Event height: ${EVENT_HEIGHT}`)
 
@@ -92,7 +91,7 @@ module.exports = async function go() {
 
   const canvas = createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
 
-  let remainingHeight = CANVAS_HEIGHT - INVISIBLE_PORTION;
+  let remainingHeight = CANVAS_HEIGHT;
 
   const ctx = canvas.getContext('2d')
   ctx.antialias = 'none';
@@ -106,7 +105,7 @@ module.exports = async function go() {
   for (const day of grouped) {
     // Write date
     
-    if (remainingHeight < DATE_HEIGHT) {
+    if (remainingHeight < DATE_HEIGHT  + EVENT_HEIGHT) { // dont write date if there isn't enough room for another event
       console.log('Filled image during date');
       break
     }

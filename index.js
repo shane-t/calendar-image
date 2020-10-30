@@ -2,13 +2,14 @@ const app = require('express')();
 const path = require('path')
 const generate = require('./generate');
 
-require('dotenv').configure()
+require('dotenv').config()
 
 const password = process.env.PASSWORD
 
-app.get('/', async (req, res) => {
+app.get('/bmp', async (req, res) => {
+  console.log(new Date(), 'bmp');
 
-  if (!req.query?.password?.includes(PASSWORD)) {
+  if (!req.query?.password?.includes(password)) {
     return res.status(401).end('nope');
   }
 
@@ -17,12 +18,13 @@ app.get('/', async (req, res) => {
 });
 
 app.get('/raw', async (req, res) => {
+  console.log(new Date(), 'raw');
 
-  if (!req.query?.password?.includes(PASSWORD)) {
+  if (!req.query?.password?.includes(password)) {
     return res.status(401).end('nope');
   }
 
-  res.sendFile(path.join(__dirname,'out.bmp'));
+  res.sendFile(path.join(__dirname,'out.raw'));
 
 });
 

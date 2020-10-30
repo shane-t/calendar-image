@@ -65,7 +65,7 @@ BmpDecoder.prototype.getData = function() {
 
 BmpDecoder.prototype.bit1 = function() {
   this.pos = this.offset;
-  let row = 600;
+  let row = 480;
 
   while(row > 0) {
     row--;

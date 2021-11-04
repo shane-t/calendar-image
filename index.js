@@ -18,7 +18,7 @@ app.get('/bmp', async (req, res) => {
 });
 
 app.get('/raw', async (req, res) => {
-  console.log(new Date(), 'raw');
+  console.log(new Date(), req.url);
 
   if (!req.query?.password?.includes(password)) {
     return res.status(401).end('nope');
@@ -28,7 +28,12 @@ app.get('/raw', async (req, res) => {
 
 });
 
-app.listen(1984);
+app.get('/success', (req, res) => {
+  console.log(new Date(), req.url);
+  return res.send("OK");
+})
+
+app.listen(process.env.PORT);
 
 // Create a new image every 15 minutes
 generate().then(() => {

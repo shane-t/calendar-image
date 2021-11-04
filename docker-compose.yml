@@ -1,0 +1,9 @@
+version: "3.8"
+services:
+  web:
+    restart: always
+    env_file:
+      - .env
+    build: .
+    ports:
+      - "1984:8080"

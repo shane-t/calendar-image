@@ -4,7 +4,8 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "googleapis": "^62.0.0",
-    "moment": "^2.29.1"
+    "moment": "^2.29.1",
+    "moment-timezone": "^0.5.33"
   },
   "name": "gcal",
   "version": "1.0.0",

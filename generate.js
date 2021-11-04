@@ -1,5 +1,5 @@
 const client = require('./client');
-const moment = require('moment');
+const moment = require('moment-timezone');
 const fs = require('fs');
 const { createCanvas } = require('canvas');
 const { spawn } = require('child_process')
@@ -30,7 +30,10 @@ const EVENT_HEIGHT=EVENT_VERTICAL_MARGIN + EVENT_BORDER + EVENT_VERTICAL_PADDING
 const EVENT_BOX_HEIGHT=EVENT_HEIGHT - (EVENT_VERTICAL_MARGIN * 2) // Total height including border
 const EVENT_BOX_WIDTH=CANVAS_WIDTH - (EVENT_HORIZONTAL_MARGIN * 2) // Total width including border
 const EVENT_TIME_FONT_SIZE=32;
-const EVENT_TIME_RIGHT_OFFSET=195;
+const EVENT_TIME_RIGHT_OFFSET=200;
+const DEBUG_FONT_SIZE=12;
+const DEBUG_TOP_OFFSET=2;
+const DEBUG_RIGHT_OFFSET=250;
 
 console.log(`Event height: ${EVENT_HEIGHT}`)
 
@@ -46,7 +49,7 @@ function filter(e) {
 }
 
 function sort(a, b) {
-  return moment(a.start.dateTime).diff(b.start.dateTime);
+  return moment(a.start.dateTime || a.start.date).diff(b.start.dateTime || b.start.date);
 }
 
 function format(e) {
@@ -54,10 +57,10 @@ function format(e) {
     summary: truncate(e.summary, 44),
     creator: e.creator,
     status: e.status,
-    start: moment(e.start.dateTime),
-    end: moment(e.end.dateTime),
-    ongoing : moment(e.start.dateTime) < moment() && moment(e.end.dateTime) > moment(),
-    day: moment(e.start.dateTime).format('YYYY-MM-DD - dddd'),
+    start: moment(e.start.dateTime || e.start.date).tz('Europe/Dublin'),
+    end: moment(e.end.dateTime || e.end.date).tz('Europe/Dublin'),
+    ongoing : moment(e.start.dateTime || e.start.date) < moment() && moment(e.end.dateTime || e.end.date) > moment(),
+    day: moment(e.start.dateTime || e.start.date).format('YYYY-MM-DD - dddd'),
     attendees: e.attendees?.length
   }
 
@@ -87,7 +90,7 @@ module.exports = async function go() {
 
   const grouped = merged.filter(filter).sort(sort).map(format).reduce(groupByDate, [])
   
-  console.log(grouped)
+  console.log(JSON.stringify(grouped, null, '  '));
 
   const canvas = createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
 
@@ -100,6 +103,12 @@ module.exports = async function go() {
   ctx.fillStyle = '#FFF'
   ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
   ctx.fillStyle = '#000'
+
+  //debug 
+  ctx.font = `${DEBUG_FONT_SIZE}px ${FONT}`
+  const debugYStart = (CANVAS_HEIGHT - remainingHeight) + DEBUG_FONT_SIZE + DEBUG_TOP_OFFSET;
+  const debugXStart = CANVAS_WIDTH - DEBUG_RIGHT_OFFSET;
+  ctx.fillText('gen:' + new Date().toLocaleString(), debugXStart, debugYStart)
 
   loop:
   for (const day of grouped) {
@@ -121,6 +130,7 @@ module.exports = async function go() {
     remainingHeight -= DATE_HEIGHT;
 
     console.log(`${remainingHeight} remains`)
+
 
     for (const ev of day.events) {
       if (remainingHeight < (EVENT_HEIGHT)) {
@@ -145,7 +155,7 @@ module.exports = async function go() {
       ctx.font = `${EVENT_TIME_FONT_SIZE}px ${FONT}`
       const timeYStart = (CANVAS_HEIGHT - remainingHeight) + EVENT_VERTICAL_MARGIN + EVENT_VERTICAL_PADDING + EVENT_TIME_FONT_SIZE;
       const timeXStart = CANVAS_WIDTH - EVENT_TIME_RIGHT_OFFSET;
-      ctx.fillText(ev.start.format('HH:mm -') + ev.end.format('HH:mm'), timeXStart, timeYStart)
+      ctx.fillText(ev.start.format('HH:mm-') + ev.end.format('HH:mm'), timeXStart, timeYStart)
 
       // Event detail
       ctx.font = `${EVENT_DETAIL_FONT_SIZE}px ${FONT}`

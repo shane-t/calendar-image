@@ -83,7 +83,7 @@ function getAccessToken(oAuth2Client) {
  * Lists the next n events on the user's primary calendar.
  * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
  */
-function listEvents(auth, numberOfEvents) {
+function listEvents(auth, numberOfEvents, calendarId = 'primary') {
   return new Promise((resolve, reject) => {
     const calendar = google.calendar({version: 'v3', auth});
     calendar.events.list({

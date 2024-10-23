@@ -53,8 +53,15 @@ function sort(a, b) {
 }
 
 function format(e) {
+  let summary
+
+  if (e.summary) {
+    summary = e.summary
+  } else {
+    summary = "(No title)"
+  }
   const obj = {
-    summary: truncate(e.summary, 44),
+    summary: truncate(summary, 44),
     creator: e.creator,
     status: e.status,
     start: moment(e.start.dateTime || e.start.date).tz('Europe/Dublin'),

@@ -1,6 +1,7 @@
 const app = require('express')();
 const path = require('path')
 const generate = require('./generate');
+const publish = require('./mqtt');
 
 require('dotenv').config()
 
@@ -30,6 +31,7 @@ app.get('/raw', async (req, res) => {
 
 app.get('/success', (req, res) => {
   console.log(new Date(), req.url);
+  publish('Calendar update success');
   return res.send("OK");
 })
 
